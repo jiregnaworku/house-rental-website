@@ -1,26 +1,52 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Home } from './components/Home/Home';
+import { AuthForm } from './components/auth/AuthForm';
+import { TenantDashboard } from './components/dashboard/TenantDashboard';
+import  LandlordDashboard  from './components/dashboard/LandlordDashboard';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-50">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<AuthForm />} />
+            <Route 
+              path="/tenant/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <TenantDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/landlord/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <LandlordDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
+
+// ✅ Protected route stays the same
+const ProtectedRoute = ({ children }: { children: React.ReactNode }): React.ReactElement => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+};
 
 export default App;
