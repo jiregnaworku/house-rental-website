@@ -1,10 +1,10 @@
 House Rental System
 
-A modern, responsive, and user-friendly House Rental System web application built with React. This system allows users to browse, search, and manage rental properties efficiently, while providing landlords with the ability to list and manage their properties.
+A modern, responsive, and user-friendly House Rental System web application built with React.
+This system allows users to browse, search, and manage rental properties efficiently, while providing landlords with tools to list and manage their properties.
 
 Features
-
-User Features:
+User Features
 
 Browse available houses for rent
 
@@ -16,7 +16,7 @@ Favorite or bookmark properties for quick access
 
 Responsive UI for desktop and mobile devices
 
-Admin/Landlord Features:
+Admin / Landlord Features
 
 Add, edit, and delete property listings
 
@@ -24,7 +24,7 @@ Manage bookings and inquiries
 
 Dashboard analytics for monitoring property activity
 
-Technical Features:
+Technical Features
 
 Built with React.js using modern hooks and functional components
 
@@ -43,50 +43,40 @@ This project was bootstrapped with Create React App
 
 Prerequisites
 
-Node.js >= 16.x
+Node.js >= 16.x (Download Node.js
+)
 
-npm >= 8.x
-
-Optional: yarn package manager
+npm >= 8.x (or Yarn
+ as alternative)
 
 Installation
 
 Clone the repository:
 
-git clone https://github.com/yourusername/house-rental-system.git
-cd house-rental-system
+git clone https://github.com/jiregnaworku/house-rental-website.git
+cd house-rental-website
+
 
 Install dependencies:
 
 npm install
-
 # or
-
 yarn install
 
 Available Scripts
-
-In the project directory, you can run:
-
 npm start
 
-Runs the app in development mode.
-Open http://localhost:3000
-to view it in your browser.
-
-The page reloads automatically when you make edits.
-
-You will see any lint errors in the console.
+Runs the app in development mode. Open http://localhost:3000
+.
 
 npm test
 
-Launches the test runner in interactive watch mode.
-For more information, see running tests
+Launches the test runner in interactive watch mode. See Running Tests
 .
 
 npm run build
 
-Builds the app for production to the build folder.
+Builds the app for production to the build/ folder.
 
 Bundles React in production mode
 
@@ -94,31 +84,19 @@ Optimizes the build for best performance
 
 Filenames include content hashes for caching
 
-Your app is ready to be deployed!
-See deployment
-for options.
-
 npm run eject
 
-Warning: this is a one-way operation. Once you eject, you cannot go back.
-
-Use only if you need full control over the build configuration
-
-Copies all config files (Webpack, Babel, ESLint, etc.) into your project
-
-After ejecting, all scripts will still work, but you can fully customize the build
+⚠️ Warning: One-way operation. Only use if you need full control over build configuration.
 
 Deployment
 
-The app can be deployed on any static hosting service:
+You can deploy this app on any static hosting service:
 
-Vercel: Continuous deployment with GitHub integration
+Vercel: https://vercel.com
 
-Netlify: Drag & drop build/ folder or use Git integration
+Netlify: https://www.netlify.com
 
-GitHub Pages: Deploy using gh-pages package
-
-Custom server: Serve build/ folder with Nginx, Apache, or Node.js
+GitHub Pages: https://pages.github.com
 
 Example for Netlify:
 
@@ -126,16 +104,16 @@ npm run build
 netlify deploy --dir=build
 
 Folder Structure
-house-rental-system/
-├── public/ # Static files
+house-rental-website/
+├── public/           # Static files
 ├── src/
-│ ├── components/ # Reusable UI components
-│ ├── pages/ # React pages
-│ ├── context/ # React Context for state management
-│ ├── hooks/ # Custom React hooks
-│ ├── services/ # API calls and utilities
-│ ├── styles/ # Global styles and theme
-│ └── App.js # Main application entry
+│   ├── components/   # Reusable UI components
+│   ├── pages/        # React pages
+│   ├── context/      # React Context for state management
+│   ├── hooks/        # Custom React hooks
+│   ├── services/     # API calls and utilities
+│   ├── styles/       # Global styles and themes
+│   └── App.js        # Main application entry
 ├── package.json
 ├── README.md
 └── .gitignore
@@ -152,7 +130,7 @@ CSS Tricks for Responsive Design
 
 Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome!
 
 Fork the repository
 
@@ -167,12 +145,10 @@ Open a Pull Request
 License
 
 This project is licensed under the MIT License — see the LICENSE
-file for details.
+ file for details.
 
 Author
 
 Jiregna Worku
 
-GitHub
-
-LinkedIn
+GitHub: https://github.com/jiregnaworku
