@@ -39,6 +39,21 @@ export interface Property {
   updatedAt: string;
 }
 
+// Helper function to handle file uploads
+const uploadFiles = async (files: File[]): Promise<string[]> => {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('images', file);
+  });
+
+  const response = await api.post('/api/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data.urls;
+};
+
 export const propertyApi = {
   // Get all properties for the logged-in landlord
   getProperties: async (): Promise<Property[]> => {
@@ -52,9 +67,20 @@ export const propertyApi = {
     return response.data.data.property;
   },
 
-  // Create a new property
-  createProperty: async (propertyData: Omit<Property, '_id' | 'landlord' | 'createdAt' | 'updatedAt'>): Promise<Property> => {
-    const response = await api.post('/api/properties', propertyData);
+  // Create a new property with images
+  createProperty: async (data: {
+    propertyData: Omit<Property, '_id' | 'landlord' | 'createdAt' | 'updatedAt' | 'images'>;
+    images: File[];
+  }): Promise<Property> => {
+    // First upload images
+    const imageUrls = await uploadFiles(data.images);
+    
+    // Then create property with image URLs
+    const response = await api.post('/api/properties', {
+      ...data.propertyData,
+      images: imageUrls,
+    });
+    
     return response.data.data.property;
   },
 
@@ -75,20 +101,13 @@ export const propertyApi = {
     return response.data.data.property;
   },
 
-  // Upload property images
-  uploadImages: async (propertyId: string, files: File[]): Promise<{ urls: string[] }> => {
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('images', file);
+  // Upload additional property images
+  uploadPropertyImages: async (propertyId: string, files: File[]): Promise<{ urls: string[] }> => {
+    const imageUrls = await uploadFiles(files);
+    const response = await api.patch(`/api/properties/${propertyId}/images`, {
+      images: imageUrls,
     });
-
-    const response = await api.post(`/api/properties/${propertyId}/images`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    return response.data.data;
+    return { urls: imageUrls };
   },
 };
 

@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { propertyApi } from '../../services/propertyApi';
+import React, { useState, useCallback } from "react";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { propertyApi } from "../../services/api";
 
 interface ImageUploadProps {
   images: string[];
@@ -37,51 +37,44 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setIsDragging(false);
 
     const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      handleFiles(files);
-    }
+    if (files.length > 0) handleFiles(files);
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const files = Array.from(e.target.files);
-      handleFiles(files);
+      handleFiles(Array.from(e.target.files));
     }
   };
 
-  const handleFiles = useCallback(async (files: File[]) => {
-    if (!propertyId) {
-      const newImages = files.map(file => URL.createObjectURL(file));
-      onUpload([...images, ...newImages]);
-      return;
-    }
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      if (!propertyId) {
+        // Just preview if no propertyId yet
+        const newImages = files.map((file) => URL.createObjectURL(file));
+        onUpload([...images, ...newImages]);
+        return;
+      }
 
-    try {
-      setIsUploading(true);
-      setError(null);
-      
-      const formData = new FormData();
-      files.forEach(file => {
-        formData.append('images', file);
-      });
+      try {
+        setIsUploading(true);
+        setError(null);
 
-      const response = await api.post(`/properties/${propertyId}/images`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
-      onUpload([...images, ...response.data.data.urls]);
-    } catch (err) {
-      console.error('Error uploading images:', err);
-      setError('Failed to upload images. Please try again.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
+        const response = await propertyApi.uploadImages(propertyId, files);
+        onUpload([...images, ...response.urls]);
+      } catch (err) {
+        console.error("Error uploading images:", err);
+        setError("Failed to upload images. Please try again.");
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [images, onUpload, propertyId]
+  );
 
   const triggerFileInput = () => {
-    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+    const fileInput = document.getElementById(
+      "file-upload"
+    ) as HTMLInputElement;
     if (fileInput) fileInput.click();
   };
 
@@ -89,7 +82,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     <div className="space-y-4">
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center ${
-          isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+          isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -114,19 +107,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 onChange={handleFileInput}
                 disabled={isUploading}
               />
-            </label>{' '}
+            </label>{" "}
             or drag and drop
           </div>
-          <p className="text-xs text-gray-500">
-            PNG, JPG, GIF up to 5MB
-          </p>
+          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
         </div>
       </div>
 
-      {error && (
-        <div className="text-sm text-red-600">{error}</div>
-      )}
-
+      {error && <div className="text-sm text-red-600">{error}</div>}
       {isUploading && (
         <div className="text-sm text-gray-500">Uploading images...</div>
       )}
@@ -140,19 +128,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             {images.map((image, index) => (
               <div key={index} className="relative group">
                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
-                  {image.startsWith('blob:') ? (
-                    <img
-                      src={image}
-                      alt={`Preview ${index + 1}`}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  ) : (
-                    <img
-                      src={image}
-                      alt={`Property ${index + 1}`}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  )}
+                  <img
+                    src={image}
+                    alt={`Property ${index + 1}`}
+                    className="h-full w-full object-cover object-center"
+                  />
                 </div>
                 <button
                   type="button"

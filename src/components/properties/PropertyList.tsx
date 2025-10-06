@@ -1,7 +1,13 @@
+import { FiEdit2 } from 'react-icons/fi';
+import { FiTrash2 } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
+import { FiFilter } from 'react-icons/fi';
+import { FiX } from 'react-icons/fi';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { propertyApi, Property } from '../../services/propertyApi';
+
 
 const PropertyList: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);

@@ -175,4 +175,23 @@ Jiregna Worku
 
 GitHub
 
-LinkedIn
+LinkedPS C:\Users\hp\Desktop\Webs\hrms\backend> npm run dev
+
+> house-rental-backend@1.0.0 dev
+> ts-node-dev --respawn --transpile-only src/server.ts
+
+[INFO] 18:23:06 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2,
+typescript ver. 5.9.3)
+Missing Cloudinary configuration
+Failed to initialize Cloudinary: Error: Missing Cloudinary configuration
+at cloudinaryConfig (C:\Users\hp\Desktop\Webs\hrms\backend\src\controllers\propertyImage.controller.ts:16:11)
+at Object.<anonymous> (C:\Users\hp\Desktop\Webs\hrms\backend\src\controllers\propertyImage.controller.ts:28:3)
+at Module.<anonymous> (node:internal/modules/cjs/loader:1760:14)
+at Module.\_compile (C:\Users\hp\AppData\Roaming\npm\node_modules\ts-node-dev\node_modules\source-map-support\source-map-support.js:568:25)
+at Module.m.\_compile (C:\Users\hp\AppData\Local\Temp\ts-node-dev-hook-5098883707704546.js:69:33)
+at node:internal/modules/cjs/loader:1893:10
+at require.extensions..jsx.require.extensions..js (C:\Users\hp\AppData\Local\Temp\ts-node-dev-hook-5098883707704546.js:114:20)  
+ at require.extensions.<computed> (C:\Users\hp\AppData\Local\Temp\ts-node-dev-hook-5098883707704546.js:71:20)
+at Object.nodeDevHook [as .ts] (C:\Users\hp\AppData\Roaming\npm\node_modules\ts-node-dev\lib\hook.js:63:13)
+at Module.load (node:internal/modules/cjs/loader:1480:32)  
+In

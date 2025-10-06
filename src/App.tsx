@@ -2,9 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './components/Home/Home';
 import { AuthForm } from './components/auth/AuthForm';
-import { TenantDashboard } from './components/dashboard/TenantDashboard';
+import { TenantDashboard } from './components/tenant/TenantDashboard';
 import  LandlordDashboard  from './components/dashboard/LandlordDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import PropertyForm from './components/properties/PropertyForm';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -30,8 +33,25 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/properties/new" 
+              element={
+                <ProtectedRoute>
+                  <PropertyForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/properties/:id/edit" 
+              element={
+                <ProtectedRoute>
+                  <PropertyForm />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <ToastContainer position="top-right" autoClose={3000} newestOnTop closeOnClick />
         </div>
       </AuthProvider>
     </Router>

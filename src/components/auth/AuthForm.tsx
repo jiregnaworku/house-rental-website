@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Home } from 'lucide-react';
+import { Mail, Lock, Home } from 'lucide-react';
 import { Input } from './Input';
 import { Radio } from './Radio';
 

@@ -1,9 +1,12 @@
+import type { ReactNode } from 'react';
+
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
 export type MaintenanceStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';
 export type MessageStatus = 'unread' | 'read' | 'archived';
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
 
 export interface Payment {
+  propertyName: ReactNode;
   id: string;
   amount: number;
   date: string;

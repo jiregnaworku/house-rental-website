@@ -1,135 +1,123 @@
-import { Payment, MaintenanceRequest } from '../types/dashboard';
+// src/services/api.ts
+export const API_URL = 'http://localhost:5000/api'; // adjust your backend URL
 
-const API_URL = 'http://localhost:5000/api';
+export const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
+  const token = localStorage.getItem('token');
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> | undefined),
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
 
-// Types for dashboard overview
-export interface DashboardOverview {
-  totalProperties: number;
-  activeTenants: number;
-  pendingRequests: number;
-  monthlyIncome: number;
-  recentActivity: {
-    id: string;
-    title: string;
-    description: string;
-    timestamp: string;
-    type: 'payment' | 'request' | 'message' | 'other';
-  }[];
-  incomeData: {
-    month: string;
-    income: number;
-  }[];
-  occupancyData: {
-    month: string;
-    occupancyRate: number;
-  }[];
-}
-
-// Helper function to handle API responses
-const handleResponse = async (response: Response) => {
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || 'Something went wrong');
+  const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  const contentType = res.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
+  const body = isJson ? await res.json().catch(() => null) : await res.text().catch(() => '');
+  if (!res.ok) {
+    const message = isJson ? body?.message || body?.error || `API error: ${res.status}` : `API error: ${res.status}`;
+    throw new Error(message);
   }
-  return data;
+  return body;
 };
 
-// Auth API
+// --- Auth API ---
 export const authApi = {
   signup: async (email: string, password: string, role: string) => {
-    const response = await fetch(`${API_URL}/auth/signup`, {
+    const data = await fetchWithAuth('/auth/signup', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({ email, password, role }),
     });
-    return handleResponse(response);
+    if (data?.token) localStorage.setItem('token', data.token);
+    return data;
   },
-
   login: async (email: string, password: string) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const data = await fetchWithAuth('/auth/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify({ email, password }),
     });
-    return handleResponse(response);
+    if (data?.token) localStorage.setItem('token', data.token);
+    return data;
   },
 };
 
-// Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Types
+export interface Property {
+  id: string;
+  name: string;
+  address: string;
+  type: string;
+  rent: number;
+  status: 'available' | 'occupied' | 'vacant';
+}
 
-// Mock data
-const mockPayments: Payment[] = [
-  {
-    id: '1',
-    amount: 1200,
-    date: '2023-11-01',
-    status: 'pending',
-    method: 'Bank Transfer',
-    receiptUrl: '/receipts/1',
-    description: 'November Rent'
-  },
-  // Add more mock payments...
-];
+export interface Payment {
+  id: string;
+  tenantName: string;
+  propertyName: string;
+  amount: number;
+  date: string;
+  status: 'Paid' | 'Pending' | 'Overdue';
+  description?: string;
+}
 
-const mockMaintenanceRequests: MaintenanceRequest[] = [
-  {
-    id: '1',
-    title: 'Leaking Faucet',
-    description: 'Kitchen faucet is leaking and needs repair.',
-    status: 'open',
-    createdAt: '2023-10-25T14:30:00Z',
-    updatedAt: '2023-10-25T14:30:00Z',
-    priority: 'medium',
-    images: ['/images/faucet-leak.jpg']
-  },
-  // Add more mock maintenance requests...
-];
+export interface TenantRequest {
+  id: string;
+  tenantName: string;
+  propertyName: string;
+  type: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  date: string;
+}
+
+export interface Profile {
+  name: string;
+  email: string;
+}
 
 // API functions
-export const fetchPayments = async (): Promise<Payment[]> => {
-  await delay(500);
-  return [...mockPayments];
+export const getProperties = async (): Promise<Property[]> => {
+  const res = await fetchWithAuth('/properties');
+  // Backend returns { status: 'success', data: { properties: [...] } }
+  return res?.data?.properties ?? [];
 };
+export const getPayments = () => fetchWithAuth('/dashboard/payments');
+export const getTenantRequests = () => fetchWithAuth('/dashboard/tenant-requests');
+export const getLandlordOverview = () => fetchWithAuth('/dashboard/overview');
+export const getProfile = () => fetchWithAuth('/profile');
 
-export const fetchMaintenanceRequests = async (): Promise<MaintenanceRequest[]> => {
-  await delay(600);
-  return [...mockMaintenanceRequests];
-};
+export const approveRequest = (id: string) => fetchWithAuth(`/requests/${id}/approve`, { method: 'POST' });
+export const rejectRequest = (id: string) => fetchWithAuth(`/requests/${id}/reject`, { method: 'POST' });
+export const updateProfile = (data: Partial<Profile>) => fetchWithAuth('/profile', { method: 'PUT', body: JSON.stringify(data) });
 
-export const createMaintenanceRequest = async (request: Omit<MaintenanceRequest, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<MaintenanceRequest> => {
-  await delay(800);
-  const newRequest: MaintenanceRequest = {
-    ...request,
-    id: Math.random().toString(36).substr(2, 9),
-    status: 'open',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  mockMaintenanceRequests.push(newRequest);
-  return newRequest;
-};
-
-// Dashboard API
-export const dashboardApi = {
-  getLandlordOverview: async (): Promise<DashboardOverview> => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
-    const response = await fetch(`${API_URL}/dashboard/overview`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    return handleResponse(response);
+// Property media endpoints
+export const propertyApi = {
+  getProperty: async (id: string) => {
+    const res = await fetchWithAuth(`/properties/${id}`);
+    return res?.data?.property;
   },
+  createProperty: async (propertyData: any) => {
+    const res = await fetchWithAuth('/properties', { method: 'POST', body: JSON.stringify(propertyData) });
+    return res?.data?.property; // unwrap created property
+  },
+  updateProperty: async (id: string, propertyData: any) => {
+    const res = await fetchWithAuth(`/properties/${id}`, { method: 'PATCH', body: JSON.stringify(propertyData) });
+    return res?.data?.property;
+  },
+  deleteProperty: async (id: string) => fetchWithAuth(`/properties/${id}`, { method: 'DELETE' }),
+  uploadImages: async (id: string, files: File[]): Promise<{ urls: string[] }> => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    files.forEach((f) => formData.append('images', f));
+    const res = await fetch(`${API_URL}/properties/${id}/images`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error(`Image upload failed: ${res.status}`);
+    return res.json();
+  },
+  uploadPropertyImages: async (id: string, files: File[]) => propertyApi.uploadImages(id, files),
 };
